@@ -1,0 +1,27 @@
+P[0] Start time: 0 End time: 9 | Waiting time: 0
+P[1] Start time: 9 End time: 11 | Waiting time: 8
+P[2] Start time: 11 End time: 14 | Waiting time: 7
+P[3] Start time: 14 End time: 19 | Waiting time: 9
+P[4] Start time: 19 End time: 21 | Waiting time: 11
+P[5] Start time: 21 End time: 25 | Waiting time: 11
+P[6] Start time: 25 End time: 28 | Waiting time: 14
+P[7] Start time: 28 End time: 37 |Start time: 114 End time: 116 | Waiting time: 98
+P[8] Start time: 37 End time: 46 |Start time: 116 End time: 119 | Waiting time: 99
+P[9] Start time: 46 End time: 50 | Waiting time: 28
+P[10] Start time: 50 End time: 52 | Waiting time: 31
+P[11] Start time: 52 End time: 57 | Waiting time: 32
+P[12] Start time: 57 End time: 66 | Waiting time: 37
+P[13] Start time: 66 End time: 75 |Start time: 119 End time: 125 | Waiting time: 99
+P[14] Start time: 75 End time: 77 | Waiting time: 54
+P[15] Start time: 77 End time: 82 | Waiting time: 52
+P[16] Start time: 82 End time: 83 | Waiting time: 51
+P[17] Start time: 83 End time: 87 | Waiting time: 44
+P[18] Start time: 87 End time: 95 | Waiting time: 47
+P[19] Start time: 95 End time: 101 | Waiting time: 55
+P[20] Start time: 101 End time: 103 | Waiting time: 59
+P[21] Start time: 103 End time: 104 | Waiting time: 59
+P[22] Start time: 104 End time: 108 | Waiting time: 58
+P[23] Start time: 108 End time: 111 | Waiting time: 61
+P[24] Start time: 111 End time: 113 | Waiting time: 61
+P[25] Start time: 113 End time: 114 | Waiting time: 62
+Average waiting time: 44.1
