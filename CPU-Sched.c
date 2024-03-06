@@ -1,202 +1,286 @@
-import sys
-
-def fcfs(y, arr):
-    i, j = 0, 0
-    start, end = arr[1], arr[1]
-    temp = 0
-    endTime = [0] * y
-    startTime = [0] * y
-
-    with open("fcfs.txt", "w") as file:
-        for i in range(y):
-            start = end
-            startTime[i] = start
-            end += arr[j * 3 + 2]
-            endTime[i] = end
-            temp += start - arr[i * 3 + 1]
-            j += 1
-            print(f"P[{arr[i * 3]}] Start time: {startTime[i]} End time: {endTime[i]} | Waiting time: {startTime[i] - arr[i * 3 + 1]}")
-            file.write(f"P[{arr[i * 3]}] Start time: {startTime[i]} End time: {endTime[i]} | Waiting time: {startTime[i] - arr[i * 3 + 1]}\n")
-
-        print(f"Average waiting time: {temp / y:.1f}")
-        file.write(f"Average waiting time: {temp / y:.1f}")
+/*
+2/3/2024
+CPU - Scheduling - MCO1
+ FLORES, PAOLO MIGUEL
+ LUSTRE, JOSE MARCO
+ MARQUEZ, RALPH GABRIEL
+*/
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<stdbool.h>
 
 
-def round_robin(size, splice, arr):
-    i, j, k = 0, 0, 0
-    time, burst = 0, 0
-    startTime = arr[1]
-    endTime = arr[1]
-    waitTime = [0] * size
-    output = [""] * size
-    check = False
-    aveWait = 0
+void fcfs( int y, int* arr);
+void sjf(int y, int* arr);
+void srtf(int y, int* arr);
+void RR(int y, int z, int* arr);
 
-    with open("RR.txt", "w") as file:
-        for i in range(size):
-            output[i] = f"P[{arr[i * 3]}] "
+int main(){
+FILE* file;
+char filename[30];
+char* token;
+char string1[10], string2[10], string3[10];
+int inputArr[10][3];
+int i, j, x, y, z, temp;
+int* arr = (int*)malloc(y*3*sizeof(int));
 
-        while True:
-            check = False
-            for i in range(size):
-                if arr[i * 3 + 2] > 0:
-                    startTime = endTime
-                    burst = arr[i * 3 + 2]
-                    arr[i * 3 + 2] -= splice
+printf("Input filename: ");
+gets(filename);
+strcat(filename, ".txt");
+printf("filename is: %s\n", filename);
+file = fopen(filename, "r");
 
-                    if burst - splice <= 0:
-                        endTime += burst
+x = 0; //scheduling
+y = 3; //number of processes
+z = 1; //time slice 
+if (file == NULL){
+printf("File could not be opened");
+}
 
-                        if i > 0:
-                            waitTime[i] = startTime - arr[i * 3 + 1]
-                            aveWait += waitTime[i]
-                        else:
-                            waitTime[i] = 0
+else{
+    fscanf(file, "%d %d %d", &x, &y, &z);
+    printf("%d %d %d\n", x, y, z); 
+    
+    for (i = 0; i < y * 3; i++){
+            fscanf(file, "%d", &arr[i]);
+    }
+}
+fclose(file);
+switch (x)
+{
+case 0:
+    fcfs(y, arr);
+    break;
+case 1:
+    sjf(y, arr);
+    break;
+case 2:
+    srtf(y, arr);
+    break;
+case 3:
+    RR(y, z, arr);
+    break;
+default:
+    break;
+}
+return 0;   
+}
 
-                        output[i] += f"Start time: {startTime} End time: {endTime} | Waiting time: {waitTime[i]}\n"
-                    else:
-                        endTime += splice
-                        output[i] += f"Start time: {startTime} End time: {endTime} |"
-                        check = True
+void fcfs(int y, int* arr){
+    int i = 0, j = 0;
+    int start = arr[1], end = arr[1];
+    float temp = 0;
 
-            if not check:
-                break
+    int* endTime = (int*)malloc(y * sizeof(int));
+    int* startTime = (int*)malloc(y * sizeof(int));
+    FILE* file;
+    file = fopen("fcfs.txt", "w");
+    
+    for (i = 0; i < y; i++){
+        start = end;
+        startTime[i] = start;
+        end += arr[j * 3 + 2];
+        endTime[i] = end;
+        temp += start - arr[i * 3 + 1];
+        j++;
+        printf("P[%d] Start time: %d End time: %d | Waiting time: %d\n", 
+        arr[i * 3], startTime[i], endTime[i], startTime[i] - arr[i * 3 + 1]);
+        fprintf(file,"P[%d] Start time: %d End time: %d | Waiting time: %d\n", 
+        arr[i * 3], startTime[i], endTime[i], startTime[i] - arr[i * 3 + 1]);
+    }
+    printf("Average waiting time: %.1f", temp / y);
+    fprintf(file, "Average waiting time: %.1f", temp / y);
+    fclose(file);
 
-        for i in range(size):
-            print(output[i])
-            file.write(output[i] + "\n")
+}
 
-        print(f"Average waiting time: {aveWait / size:.1f}")
-        file.write(f"Average waiting time: {aveWait / size:.1f}")
+void RR(int size, int splice, int* arr){
+  int i = 0, j = 0, k = 0;
+  int time = 0, burst = 0;
+  int startTime = arr[1]; // start at first process
+  int endTime = arr[1];
+  int* waitTime = (int*)malloc(size * sizeof(int));
+  char string[100];
+  char output[size][10000];
+  bool check = false;
+  float aveWait = 0;
+  FILE *file;
+  file = fopen("RR.txt", "w");
 
+  for (i = 0; i < size; i++){
+    sprintf(output[i], "P[%d] ", arr[i * 3]);
+  }
+  
 
-def srtf(size, arr):
-    i, j = 0, 0
-    time, burst = arr[1], 0
-    startTime = arr[1]
-    endTime = arr[1]
-    waitTime = [0] * size
-    output = [""] * size
-    check = False
-    min_val, min_index, prev_min = 99999999, 0, 0
-    complete = 0
-    counter = 0
-    order = [0] * size
-    bt = [0] * size
-    aveWait = 0
+  do{
+        check = false;
+    for (i = 0; i < size; i++){
+        if (arr[i * 3 + 2] > 0){
+            startTime = endTime;
+            burst = arr[i * 3 + 2];
+            arr[i * 3 + 2] -= splice;
+            if (burst - splice <= 0){ // if quantum splice is less than burst time
+                endTime += burst;
+                    if (i > 0){
+                        waitTime[i] = startTime - arr[i * 3 + 1];
+                        aveWait += waitTime[i];
+                    }
+                    else{
+                        waitTime[i] = 0;
+                    }
+                sprintf(string, "Start time: %d End time: %d | Waiting time: %d", startTime, endTime, waitTime[i]);
+                strcat(output[i], string);
+            }
+            else{
+                endTime += splice;
+                sprintf(string, "Start time: %d End time: %d |", startTime, endTime);
+                strcat(output[i], string);
+                check = true;
+            }
+            
+        }
+        
+    }
+  }while(check == true);
 
-    with open("srtf.txt", "w") as file:
-        for i in range(size):
-            output[i] = f"P[{arr[i * 3]}] "
-            bt[i] = arr[i * 3 + 2]
+  for(i = 0; i < size; i++){
+    printf("%s\n", output[i]);
+    fprintf(file, "%s\n", output[i]);
+  }
+  printf("Average waiting time: %.1f", aveWait / size);
+  fprintf(file, "Average waiting time: %.1f", aveWait / size);
+  fclose(file);
 
-        while complete < size:
-            for i in range(size):
-                if arr[i * 3 + 1] <= time and arr[i * 3 + 2] < min_val and arr[i * 3 + 2] > 0:
-                    min_val = arr[i * 3 + 2]
-                    min_index = i
-                    check = True
-
-            if check:
-                startTime = time
-                output[min_index] += f"Start time: {startTime} "
-                if counter > 0:
-                    endTime = time
-                    output[prev_min] += f"End time: {endTime} | "
-                prev_min = min_index
-                counter += 1
-                check = False
-
-            arr[min_index * 3 + 2] -= 1
-            min_val -= 1
-            time += 1
-
-            if min_val == 0:
-                min_val = 99999999
-                complete += 1
-                order[j] = min_index
-                waitTime[j] = time - arr[min_index * 3 + 1] - bt[min_index]
-                aveWait += waitTime[j]
-                j += 1
-
-        output[min_index] += f"End time: {time} | "
-        for i in range(size):
-            output[order[i]] += f"Wait Time: {waitTime[i]}\n"
-            print(output[order[i]])
-            file.write(output[order[i]] + "\n")
-
-        print(f"Average waiting time: {aveWait / size:.1f}")
-        file.write(f"Average waiting time: {aveWait / size:.1f}")
-
-
-def sjf(size, arr):
-    i, j = 0, 0
-    time, burst = arr[1], 0
-    startTime = arr[1]
-    endTime = arr[1]
-    waitTime = [0] * size
-    output = [""] * size
-    check = False
-    min_val, min_index, prev_min = 99999999, 0, 0
-    complete = 0
-    order = [0] * size
-    bt = [0] * size
-    aveWait = 0
-
-    with open("sjf.txt", "w") as file:
-        for i in range(size):
-            output[i] = f"P[{arr[i * 3]}]"
-            bt[i] = arr[i * 3 + 2]
-
-        while complete < size:
-            for i in range(size):
-                if arr[i * 3 + 2] < min_val and arr[i * 3 + 2] > 0 and arr[i * 3 + 1] <= endTime:
-                    min_val = arr[i * 3 + 2]
-                    min_index = i
-
-            output[min_index] += f"Start time: {endTime} "
-            endTime += arr[min_index * 3 + 2]
-            arr[min_index * 3 + 2] = 0
-            output[min_index] += f"End time: {endTime} | "
-            order[j] = min_index
-            waitTime[min_index] = endTime - arr[min_index * 3 + 1] - bt[min_index]
-            aveWait += waitTime[min_index]
-            j += 1
-            min_val = 999999999
-            complete += 1
-
-        for i in range(size):
-            output[order[i]] += f"Wait Time: {waitTime[order[i]]}\n"
-            print(output[order[i]])
-            file.write(output[order[i]] + "\n")
-
-        print(f"Average waiting time: {aveWait / size:.1f}")
-        file.write(f"Average waiting time: {aveWait / size:.1f}")
+  
+}
 
 
-def main():
-    filename = input("Input filename: ")
-    filename += ".txt"
+void srtf(int size, int* arr){
+  int i = 0, j = 0;
+  int time = arr[1], burst = 0;
+  int startTime = arr[1];
+  int endTime = arr[1];
+  int* waitTime = (int*)malloc(size * sizeof(int));
+  char string[100];
+  char output[size][10000];
+  bool check = false;
+  int min = 99999999, minI = 0, prevMin = 0;
+  int complete = 0;
+  int counter = 0;
+  int order[size], bt[size];
+  float aveWait = 0;
+  FILE *file;
+  file = fopen("srtf.txt", "w");
+ 
+  for (i = 0; i < size; i++){
+    sprintf(output[i], "P[%d] ", arr[i * 3]);
+    bt[i] = arr[i * 3 + 2];
+  }
+  while(complete < size){
+    for (i = 0; i < size; i++){
+        if(arr[i * 3 + 1] <= time && arr[i * 3 + 2] < min && arr[i * 3 + 2] > 0){
+            min = arr[i * 3 + 2];
+            minI = i;
+            check = true;
+        }
+    }
 
-    try:
-        with open(filename, "r") as file:
-            x, y, z = map(int, file.readline().split())
-            arr = [int(num) for num in file.read().split()]
-            main_scheduler(x, y, z, arr)
-    except FileNotFoundError:
-        print(f"{filename} not found.")
+        if(check == true){
+            startTime = time;
+            sprintf(string, "Start time: %d ", startTime);
+            strcat(output[minI], string);
+            if(counter > 0){
+                endTime = time;
+                sprintf(string, "End time: %d | ", endTime);
+                strcat(output[prevMin], string);
+            }
+            prevMin = minI;
+            counter++;
+            check = false;
+        }
+
+        arr[minI * 3 + 2]--;
+        min--;
+        time++;
+
+        if(min == 0){
+            min = 99999999;
+            complete++;
+            order[j] = minI;
+            waitTime[j] = time - arr[minI * 3 + 1] - bt[minI];
+            aveWait += waitTime[j];
+            j++;
+        }
+        
+  }
+  sprintf(string, "End time: %d | ", time);
+  strcat(output[minI], string);
+  for(i = 0; i < size; i++){
+    sprintf(string, "Wait Time: %d", waitTime[i]);
+    strcat(output[order[i]], string);
+    printf("%s\n", output[order[i]]);
+    fprintf(file, "%s\n", output[i]);
+  }
+  printf("Average waiting time: %.1f", aveWait / size);
+  fprintf(file, "Average waiting time: %.1f", aveWait / size);
+  fclose(file);
+}
+
+void sjf(int size, int* arr) {
+  int i = 0, j = 0;
+  int time = arr[1], burst = 0;
+  int startTime = arr[1];
+  int endTime = arr[1];
+  int* waitTime = (int*)malloc(size * sizeof(int));
+  char string[100];
+  char output[size][1000];
+  bool check = false;
+  int min = 99999999, minI = 0, prevMin = 0;
+  int complete = 0;
+  int counter = 0;
+  int order[size], bt[size];
+  float aveWait = 0;
+  FILE *file;
+  file = fopen("sjf.txt", "w");
 
 
-def main_scheduler(x, y, z, arr):
-    if x == 0:
-        fcfs(y, arr)
-    elif x == 1:
-        sjf(y, arr)
-    elif x == 2:
-        srtf(y, arr)
-    elif x == 3:
-        round_robin(y, z, arr)
 
+  for (i = 0; i < size; i++){
+    sprintf(output[i], "P[%d]", arr[i * 3]);
+    bt[i] = arr[i * 3 + 2];
+  }
 
-if __name__ == "__main__":
-    main()
+  while (complete < size){
+    for (i = 0; i < size; i++){
+        if(arr[i * 3 + 2] < min && arr[i * 3 + 2] > 0 && arr[i * 3 + 1] <= endTime){
+            min = arr[i * 3 + 2];
+            minI = i;
+        }
+    }
+
+    sprintf(string, "Start time: %d ", endTime);
+    strcat(output[minI], string);
+    endTime += arr[minI * 3 + 2];
+    arr[minI * 3 + 2] = 0;
+    sprintf(string, "End time: %d | ", endTime);
+    strcat(output[minI], string);
+    order[j] = minI;
+    waitTime[minI] = endTime - arr[minI * 3 + 1] - bt[minI];
+    aveWait += waitTime[minI];
+    j++;
+    min = 999999999;
+    complete++;
+
+  }
+
+  for(i = 0; i < size; i++){
+    sprintf(string, "Wait Time: %d", waitTime[order[i]]);
+    strcat(output[order[i]], string);
+    printf("%s\n", output[order[i]]);
+    fprintf(file, "%s\n", output[i]);
+  }
+  printf("Average waiting time: %.1f", aveWait / size);
+  fprintf(file, "Average waiting time: %.1f", aveWait / size);
+  fclose(file);
+}
